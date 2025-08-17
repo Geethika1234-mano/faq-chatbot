@@ -2,4 +2,4 @@ fastapi
 uvicorn
 pydantic
 langchain
-openai
+openai==0.28
