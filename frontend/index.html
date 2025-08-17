@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FAQ Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            max-width: 800px;
+        }
+        h1 {
+            color: #2F855A;
+        }
+        #chatWindow {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            height: 300px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            margin-bottom: 1rem;
+        }
+        #chatWindow p {
+            margin: 0.5rem 0;
+        }
+        #chatWindow strong {
+            color: #2B6CB0;
+        }
+        #chatForm {
+            display: flex;
+        }
+        #questionInput {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+        #sendButton {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: #2B6CB0;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #sendButton:hover {
+            background-color: #2C5282;
+        }
+    </style>
+</head>
+<body>
+    <h1>FAQ Chatbot</h1>
+    <p>Ask a question and the chatbot will respond with an answer from the FAQ. This demo uses a placeholder response.</p>
+    <div id="chatWindow"></div>
+    <form id="chatForm">
+        <input type="text" id="questionInput" placeholder="Type your question here..." required />
+        <button id="sendButton" type="submit">Send</button>
+    </form>
+
+    <script>
+    const form = document.getElementById('chatForm');
+    const chatWindow = document.getElementById('chatWindow');
+    const questionInput = document.getElementById('questionInput');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const question = questionInput.value.trim();
+        if (!question) return;
+        appendMessage('You', question);
+        questionInput.value = '';
+        try {
+            const response = await fetch('http://127.0.0.1:8000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question })
+            });
+            const data = await response.json();
+            appendMessage('Bot', data.answer);
+        } catch (err) {
+            appendMessage('Error', err.toString());
+        }
+    });
+
+    function appendMessage(sender, message) {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${sender}:</strong> ${message}`;
+        chatWindow.appendChild(p);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+    </script>
+</body>
+</html>
